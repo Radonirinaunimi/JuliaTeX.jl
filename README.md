@@ -1,4 +1,4 @@
-# JuliaTeX
+# JuliaTeX.jl
 
 [![Build Status](https://travis-ci.org/chakravala/JuliaTeX.jl.svg?branch=master)](https://travis-ci.org/chakravala/JuliaTeX.jl)
 
