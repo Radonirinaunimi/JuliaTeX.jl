@@ -5,6 +5,8 @@ module JuliaTeX
 
 export zathura, latexmk, article, pdf, restore, texedit
 
+VERSION ≥ v"0.7.0-DEV.4375" ? (using Pkg3.TOML) : (using TOML)
+
 artbegin = """
 \\documentclass[]{article}
 \\usepackage[active,tightpage]{preview}
@@ -29,7 +31,7 @@ end
 function restore(file::String)
     out = ""
     open(file, "r") do f
-        out = readstring(f)
+        out = read(f,String)
     end
     String(split(split(out,"\\begin{document}\n")[2],"\n\\end{document}")[1])
 end
