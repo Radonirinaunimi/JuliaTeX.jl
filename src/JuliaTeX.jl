@@ -11,25 +11,25 @@ using VerTeX
 zathura(f::String,o=STDOUT) = spawn(`zathura $f`,(DevNull,o,STDERR))
 latexmk(f::String,o=STDOUT) = run(`latexmk -silent -pdf -cd $f`)
 
+function showpdf(str::String)
+    latexmk(str,DevNull)
+    zathura(replace(str,r".tex$",".pdf"))
+end
+
 function pdf(str::String,file::String="doc")
     open("/tmp/$file.tex", "w") do f
         write(f, VerTeX.article(str))
     end
-    latexmk("/tmp/$file.tex",DevNull)
-    zathura("/tmp/$file.pdf")
+    showpdf("/tmp/$file.tex")
 end
 
+pdf(data::Dict) = showpdf(savetex(data))
+
 function texedit(data::Dict,file::String="/tmp/doc.tex")
-    data["version"] ≠ ["VerTeX", "v\"0.1.0\""] && throw(error("wrong version"))
-    open(file, "w") do f
-        write(f, VerTeX.dict2tex(data))
-    end
-    run(`vim --servername julia $file`)
-    out = ""
-    open(file, "r") do f
-        out = read(f,String)
-    end
-    return VerTeX.tex2dict(out,data)
+    load = VerTeX.writetex(data,file)
+    run(`vim --servername julia $load`)
+    ret = VerTeX.tex2dict(VerTeX.readtex(load),data)
+    return load == file ? ret : VerTeX.save(ret)
 end
 
 function texedit(str::String,file::String="/tmp/doc.tex")
