@@ -1,17 +1,17 @@
 try
-    kill(spawn(`vim --servername`))
+    kill(run(`vim --servername`,wait=false))
     @info "vim editor support enabled (required by JuliaTeX)"
 catch
     @warn "vim editor not installed! (required by JuliaTeX)"
 end
 try
-    kill(spawn(`latexmk`))
+    kill(run(`latexmk`,wait=false))
     @info "latexmk compiler support enabled (required by JuliaTeX)"
 catch
     @warn "latexmk compiler not installed! (required by JuliaTeX)"
 end
 try
-    kill(spawn(`zathura`))
+    kill(run(`zathura`,wait=false))
     @info "zathura viewer support enabled (required by JuliaTeX)"
 catch
     @warn "zathura viewer not installed! (required by JuliaTeX)"

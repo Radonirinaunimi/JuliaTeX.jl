@@ -1,0 +1,5 @@
+name = "JuliaTeX"
+uuid = "f596db98-5ea9-523d-905b-39c673d5851d"
+
+[deps]
+VerTeX = "19dc0ece-cb56-5e38-8a38-9a14b2d7df9c"

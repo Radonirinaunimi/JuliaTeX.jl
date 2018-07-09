@@ -8,12 +8,15 @@ export zathura, latexmk, pdf, texedit
 
 using VerTeX
 
-zathura(f::String,o=STDOUT) = spawn(`zathura $f`,(DevNull,o,STDERR))
-latexmk(f::String,o=STDOUT) = run(`latexmk -silent -pdf -cd $f`)
+zathura(f::String,o=stdout) = run(`zathura $f`,(devnull,o,stderr),wait=false)
+latexmk(f::String,o=stdout) = run(`latexmk -silent -pdf -cd $f`)
 
 function showpdf(str::String)
-    latexmk(str,DevNull)
-    zathura(replace(str,r".tex$",".pdf"))
+    try
+        latexmk(str,devnull)
+    catch
+    end
+    zathura(replace(str,r".tex$"=>".pdf"))
 end
 
 function pdf(str::String,file::String="doc")
@@ -23,7 +26,7 @@ function pdf(str::String,file::String="doc")
     showpdf("/tmp/$file.tex")
 end
 
-pdf(data::Dict) = showpdf(savetex(data))
+pdf(data::Dict) = showpdf(VerTeX.writetex(data))
 
 function texedit(data::Dict,file::String="/tmp/doc.tex")
     load = VerTeX.writetex(data,file)
