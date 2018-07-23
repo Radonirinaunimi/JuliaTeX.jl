@@ -29,10 +29,14 @@ end
 pdf(data::Dict) = showpdf(VerTeX.writetex(data))
 
 function texedit(data::Dict,file::String="/tmp/doc.tex")
-    load = VerTeX.writetex(data,file)
-    run(`vim --servername julia $load`)
-    ret = VerTeX.tex2dict(VerTeX.readtex(load),data)
-    return load == file ? ret : VerTeX.save(ret)
+    try
+        load = VerTeX.writetex(data,file)
+        run(`vim --servername julia $load`)
+        ret = VerTeX.tex2dict(VerTeX.readtex(load),data)
+        return load == file ? ret : VerTeX.save(ret,file)
+    catch
+        return VerTeX.save(data,file)
+    end
 end
 
 function texedit(str::String,file::String="/tmp/doc.tex")
