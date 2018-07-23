@@ -29,6 +29,20 @@ end
 pdf(data::Dict) = showpdf(VerTeX.writetex(data))
 
 function texedit(data::Dict,file::String="/tmp/doc.tex")
+    haskey(data,"dir") && (file == "/tmp/doc.tex") && (file = data["dir"])
+    try
+        old = VerTeX.load(file,haskey(data,"depot") ? data["depot"] : "julia")
+        if (old ≠ nothing)
+            cmv = VerTeX.checkmerge(data["revised"],old,data["title"],data["author"],data["date"],data["tex"],"Memory buffer out of sync with vertex, proceed?")
+            if cmv == 0
+                throw(error("VerTeX unable to proceed due to merge failure"))
+            elseif cmv < 2
+                @warn "merged into buffer from $path"
+                data = old
+            end
+        end
+    catch
+    end
     try
         load = VerTeX.writetex(data,file)
         run(`vim --servername julia $load`)
