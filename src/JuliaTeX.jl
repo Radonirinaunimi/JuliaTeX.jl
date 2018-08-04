@@ -41,20 +41,31 @@ function texedit(data::Dict,file::String="/tmp/doc.tex")
                 data = old
             end
         end
-    catch
+    catch err
+        throw(err)
     end
     try
         load = VerTeX.writetex(data,file)
         run(`vim --servername julia $load`)
-        ret = VerTeX.tex2dict(VerTeX.readtex(load),data)
-        return load == file ? ret : VerTeX.save(ret,file)
-    catch
-        return VerTeX.save(data,file)
+        try
+            ret = VerTeX.tex2dict(VerTeX.readtex(load),data)
+            return load == file ? ret : VerTeX.save(ret,file)
+        catch
+            return VerTeX.save(data,file)
+        end
+    catch err
+        throw(err)
     end
 end
 
-function texedit(str::String,file::String="/tmp/doc.tex")
-    texedit(VerTeX.tex2dict(VerTeX.article(str)),file)
+function texedit(file::String="/tmp/doc.tex")
+    v = nothing
+    try
+        v = VerTeX.load(file)
+    catch
+        v = VerTeX.save(VerTeX.tex2dict(VerTeX.article(str)),file)
+    end
+    return texedit(v,file)
 end
 
 export VerTeX
